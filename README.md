@@ -192,3 +192,76 @@ npm start
 ## License
 
 This project is licensed under the ISC License.
+
+## Logging
+
+The application uses Winston for structured logging with different severity levels and formats.
+
+### Logger Configuration
+
+```typescript
+// config/logger.ts
+const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'logs/combined.log' }),
+  ],
+});
+```
+
+### Log Files Structure
+
+```
+logs/
+├── error.log     # Error-level logs only
+└── combined.log  # All logs (info, warn, error)
+```
+
+### Features
+
+- **Severity Levels**: ERROR, WARN, INFO, DEBUG
+- **Request Logging**: HTTP method, URL, status code, response time
+- **Environment-based Formatting**:
+  - Development: Colorized console output
+  - Production: JSON format for better parsing
+- **Automatic Log Directory Creation**: Via npm scripts
+- **Request Context**: Includes method, URL, status, and timing
+
+### Usage Examples
+
+```typescript
+// Info level logging
+logger.info('Server started', { port: 5000 });
+
+// Error logging with context
+logger.error('Database connection failed', {
+  error: err.message,
+  stack: err.stack,
+});
+
+// Request logging (automatic via middleware)
+// Output: "HTTP Request" { method: "GET", url: "/api/users", status: 200, duration: "123ms" }
+```
+
+### Environment Variables
+
+- `LOG_LEVEL`: Set logging level (default: 'info')
+- `NODE_ENV`: Determines log format (development/production)
+
+### Log Rotation
+
+- Daily rotation of log files
+- Maximum file size: 20MB
+- Retention period: 14 days
+- Naming format: `error-YYYY-MM-DD.log` and `combined-YYYY-MM-DD.log`
+
+### Additional Environment Variables
+
+- `LOG_MAX_SIZE`: Maximum size of each log file (default: '20m')
+- `LOG_MAX_FILES`: Number of days to keep logs (default: '14d')
+- `LOG_DATE_PATTERN`: Date pattern for rotated files (default: 'YYYY-MM-DD')
