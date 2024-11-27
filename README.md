@@ -265,3 +265,96 @@ logger.error('Database connection failed', {
 - `LOG_MAX_SIZE`: Maximum size of each log file (default: '20m')
 - `LOG_MAX_FILES`: Number of days to keep logs (default: '14d')
 - `LOG_DATE_PATTERN`: Date pattern for rotated files (default: 'YYYY-MM-DD')
+
+## Database
+
+This project uses PostgreSQL as its database. To set up the database connection:
+
+1. Make sure you have PostgreSQL installed on your system
+2. Configure your database connection in the `.env` file:
+   ```env
+   DB_USER=your_username
+   DB_HOST=localhost
+   DB_NAME=your_database_name
+   DB_PASSWORD=your_password
+   DB_PORT=5432
+   ```
+3. The application will automatically attempt to connect to the database on startup
+
+### Database Features
+
+- Connection pooling for optimal performance
+- Automatic connection management
+- Error handling and logging for database operations
+
+### Database Connection Management
+
+The application includes robust database connection handling:
+
+- **Connection Retries**: Automatically attempts to reconnect to the database up to 5 times
+
+  ```typescript
+  // Retry logic in database initialization
+  for (let i = 0; i < retries; i++) {
+    try {
+      await pool.connect();
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      await delay(5000); // Wait 5 seconds before retrying
+    }
+  }
+  ```
+
+- **Docker Health Checks**: PostgreSQL container includes health monitoring
+
+  ```yaml
+  healthcheck:
+    test: ['CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${DB_NAME}']
+    interval: 5s
+    timeout: 5s
+    retries: 5
+  ```
+
+- **Dependency Management**: Application waits for database readiness
+- **Debug Tools**: PostgreSQL client tools included in application container
+- **Error Logging**: Detailed connection attempt logging with attempt counts
+
+These features ensure reliable database connectivity in both development and production environments.
+
+## Docker Setup
+
+The application can be run using Docker and Docker Compose. This setup includes both the Node.js application and PostgreSQL database.
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+
+### Running with Docker
+
+1. Build and start the containers:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+2. The application will be available at `http://localhost:5000`
+
+3. To stop the containers:
+   ```bash
+   docker-compose down
+   ```
+
+### Docker Environment
+
+- The Node.js application runs in a container with Node 18
+- PostgreSQL runs in a separate container
+- Data is persisted using Docker volumes
+- Logs are mounted to the host machine
+
+### Docker Commands
+
+- Start containers: `docker-compose up`
+- Start in background: `docker-compose up -d`
+- Stop containers: `docker-compose down`
+- View logs: `docker-compose logs -f`

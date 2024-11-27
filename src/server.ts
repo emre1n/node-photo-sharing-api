@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import routes from './routes';
 import { requestLogger } from './middleware/requestLogger';
 import logger from './config/logger';
+import { initializeDatabase } from './config/database';
 
 dotenv.config();
 
@@ -16,6 +17,14 @@ app.use(requestLogger);
 // Routes
 app.use(apiPrefix, routes);
 
-app.listen(port, () => {
-  logger.info(`⚡️[server]: Server is running at http://localhost:${port}`);
-});
+// Initialize database and start server
+initializeDatabase()
+  .then(() => {
+    app.listen(port, () => {
+      logger.info(`⚡️[server]: Server is running at http://localhost:${port}`);
+    });
+  })
+  .catch((error) => {
+    logger.error('Failed to initialize database:', error);
+    process.exit(1);
+  });
