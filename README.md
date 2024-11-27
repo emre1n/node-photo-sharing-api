@@ -40,6 +40,22 @@ PORT=5000
 ```
 photo-sharing-api/
 ├── src/
+│   ├── config/
+│   │   └── database.ts
+│   ├── controllers/
+│   │   └── userController.ts
+│   ├── models/
+│   │   └── User.ts
+│   ├── routes/
+│   │   ├── index.ts
+│   │   └── userRoutes.ts
+│   ├── services/
+│   │   └── userService.ts
+│   ├── middleware/
+│   │   ├── auth.ts
+│   │   └── error.ts
+│   ├── utils/
+│   │   └── helpers.ts
 │   └── server.ts
 ├── .env
 ├── .gitignore
@@ -48,6 +64,81 @@ photo-sharing-api/
 ├── tsconfig.json
 └── README.md
 ```
+
+## Architecture Overview
+
+The project follows a functional architecture pattern with clear separation of concerns:
+
+### Core Components
+
+- **Models**: Define TypeScript interfaces and types
+
+  ```typescript
+  interface User {
+    id: number;
+    name: string;
+  }
+  type CreateUserDto = Omit<User, 'id'>;
+  ```
+
+- **Services**: Pure functions for business logic
+
+  ```typescript
+  const getUsers = async (): Promise<User[]> => { ... }
+  const createUser = async (userData: CreateUserDto): Promise<User> => { ... }
+  ```
+
+- **Controllers**: Request handlers with error management
+
+  ```typescript
+  const getUsers = async (_req: Request, res: Response) => { ... }
+  ```
+
+- **Routes**: Express router configuration
+  ```typescript
+  router.get('/', userController.getUsers);
+  ```
+
+### Design Principles
+
+- Pure functions over classes
+- Explicit typing with TypeScript
+- Immutable state updates
+- Centralized error handling
+- Clear dependency flow
+- Predictable data transformations
+
+### Data Flow
+
+1. Route receives request
+2. Controller handles request/response cycle
+3. Service performs business logic
+4. Models ensure type safety
+
+## API Endpoints
+
+All endpoints are prefixed with `/api`
+
+### Users
+
+- `GET /api/users`: Get all users
+- `GET /api/users/:id`: Get a specific user
+- `POST /api/users`: Create a new user
+
+### Route Structure
+
+```
+routes/
+├── index.ts         # Route aggregator
+└── userRoutes.ts    # User-specific routes
+```
+
+The application uses a route aggregator pattern where:
+
+- All routes are centrally managed in `routes/index.ts`
+- Each feature has its own route file (e.g., `userRoutes.ts`)
+- All endpoints are automatically prefixed with `/api`
+- New route modules can be easily added by registering them in the aggregator
 
 ## Technology Stack
 
