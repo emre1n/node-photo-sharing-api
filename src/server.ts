@@ -8,12 +8,13 @@ dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 5000;
+const apiPrefix = process.env.API_PREFIX || '/api';
 
 app.use(express.json());
 app.use(requestLogger);
 
 // Routes
-app.use('/api', routes);
+app.use(apiPrefix, routes);
 
 app.listen(port, () => {
   logger.info(`⚡️[server]: Server is running at http://localhost:${port}`);

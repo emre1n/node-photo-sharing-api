@@ -10,16 +10,16 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.DailyRotateFile({
       filename: 'logs/error-%DATE%.log',
-      datePattern: 'YYYY-MM-DD',
+      datePattern: process.env.LOG_DATE_PATTERN || 'YYYY-MM-DD',
       level: 'error',
-      maxSize: '20m',
-      maxFiles: '14d',
+      maxSize: process.env.LOG_MAX_SIZE || '20m',
+      maxFiles: process.env.LOG_MAX_FILES || '14d',
     }),
     new winston.transports.DailyRotateFile({
       filename: 'logs/combined-%DATE%.log',
-      datePattern: 'YYYY-MM-DD',
-      maxSize: '20m',
-      maxFiles: '14d',
+      datePattern: process.env.LOG_DATE_PATTERN || 'YYYY-MM-DD',
+      maxSize: process.env.LOG_MAX_SIZE || '20m',
+      maxFiles: process.env.LOG_MAX_FILES || '14d',
     }),
   ],
 });
