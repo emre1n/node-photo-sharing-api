@@ -7,7 +7,7 @@ const router = Router();
 type ControllerFn = (req: Request, res: Response) => Promise<void> | void;
 
 router.get('/', userController.getUsers as ControllerFn);
-router.get('/:id', userController.getUser as ControllerFn);
+router.get('/:id', userController.getUserById as ControllerFn);
 router.post('/', userController.createUser as ControllerFn);
 
 export default router;

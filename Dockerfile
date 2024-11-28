@@ -7,12 +7,12 @@ RUN apk add --no-cache postgresql-client
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install && npm install -g node-pg-migrate
 
 COPY . .
 
 # Create logs directory and set permissions
-RUN mkdir -p src/logs && \
+RUN mkdir -p src/logs src/migrations && \
     chmod -R 777 src/logs
 
 RUN npm run build
